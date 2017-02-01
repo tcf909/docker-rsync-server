@@ -25,4 +25,6 @@ RUN \
 
 EXPOSE 873
 
+COPY rootfs/ /
+
 CMD ["/sbin/my_init"]
