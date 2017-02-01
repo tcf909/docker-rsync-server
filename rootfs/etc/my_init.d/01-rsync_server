@@ -1,5 +1,6 @@
-#!/usr/bin/with-contenv bash
-set -xv
+#!/usr/bin/env bash
+[[ "${DEBUG,,}" == "true" ]] && set -xv
+
 RSYNC_SERVER_ALLOW="${RSYNC_SERVER_ALLOW:-10.0.0.0/8 127.0.0.1/32}"
 RSYNC_SERVER_USER="${RSYNC_SERVER_USER:-nobody}"
 RSYNC_SERVER_GROUP="${RSYNC_SERVER_GROUP:-nogroup}"
