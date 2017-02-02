@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-[[ "${DEBUG,,}" == "true" ]] && set -xv
+[[ "${DEBUG,,}" == "true" ]] && set -x
 
 RSYNC_SERVER_ALLOW="${RSYNC_SERVER_ALLOW:-10.0.0.0/8 127.0.0.1/32}"
 RSYNC_SERVER_USER="${RSYNC_SERVER_USER:-nobody}"
@@ -16,8 +16,8 @@ NOUN="VOLUME"
 mkdir -p /etc/rsync
 
 # create users matching ids passed if necessary
-[[ "${RSYNC_SERVER_GROUP}" != "nogroup" ]] && groupadd -g ${RSYNC_SERVER_GROUP} rsyncdgroup
-[[ "${RSYNC_SERVER_USER}" != "nobody" ]] && groupadd -u ${RSYNC_SERVER_USER} -G rsyncdgroup rsyncduser
+[[ "${RSYNC_SERVER_GROUP}" != "nogroup" ]] && groupadd -r ${RSYNC_SERVER_GROUP}
+[[ "${RSYNC_SERVER_USER}" != "nobody" ]] && useradd -r ${RSYNC_SERVER_USER} -g ${RSYNC_SERVER_GROUP}
 
 if [ ! -f ${RSYNC_SERVER_CONF_PATH} ]; then
 
@@ -78,13 +78,13 @@ EOF
 
     chmod 600 ${RSYNC_SERVER_CONF_PATH}
 
-    mkdir -p /etc/services.d/rsync_server
+    mkdir -p /etc/service/rsync_server
 
-    cat << EOF > /etc/services.d/rsync_server/run
+    cat << EOF > /etc/service/rsync_server/run
 #!/usr/bin/env bash
 exec /usr/bin/rsync --no-detach --daemon --config ${RSYNC_SERVER_CONF_PATH} -v
 EOF
-    chmod +x /etc/services.d/rsync_server/run
+    chmod +x /etc/service/rsync_server/run
 
 fi
 
