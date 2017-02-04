@@ -1,10 +1,13 @@
 #!/usr/bin/env bash
 [[ "${DEBUG,,}" == "true" ]] && set -x
 
-RSYNC_SERVER_ALLOW="${RSYNC_SERVER_ALLOW:-10.0.0.0/255.0.0.0 100.0.0.0/255.192.0.0 172.16.0.0/255.255.0.0 192.168.0.0/255.255.255.0 127.0.0.1/255.255.255.255}"
+#RSYNC_SERVER_ALLOW="${RSYNC_SERVER_ALLOW:-10.0.0.0/255.0.0.0 100.0.0.0/255.192.0.0 172.16.0.0/255.255.0.0 192.168.0.0/255.255.255.0 127.0.0.1/255.255.255.255}"
 RSYNC_SERVER_USER="${RSYNC_SERVER_USER:-nobody}"
 RSYNC_SERVER_GROUP="${RSYNC_SERVER_GROUP:-nogroup}"
 RSYNC_SERVER_CONF_PATH="${RSYNC_SERVER_CONF_PATH:-/etc/rsync/rsync.conf}"
+RSYNC_SERVER_SECRETS_PATH="${RSYNC_SERVER_SECRETS_PATH:-/etc/rsync/rsync.secrets}"
+RSYNC_SERVER_AUTH_USERS="${RSYNC_SERVER_AUTH_USERS:-rsync}"
+RSYNC_SERVER_AUTH_SECRETS="${RSYNC_SERVER_AUTH_SECRETS:-rsync:rsync}"
 #RSYNC_SERVER_DEFAULT_OPTIONS="${RSYNC_SERVER_DEFAULT_OPTIONS:-''}"
 #RSYNC_SERVER_VOLUME_0,1,2,3,4,...(volume_name|/local/path/in/fs
 
@@ -33,6 +36,7 @@ pid file = /var/run/rsyncd.pid
 log file = /dev/stdout
 EOF
 
+    echo -e "${RSYNC_SERVER_AUTH_SECRETS}" > "${RSYNC_SERVER_SECRETS_PATH}"
 
     COUNT=0
     while [[ true ]]; do
@@ -65,7 +69,8 @@ EOF
         cat << EOF >> ${RSYNC_SERVER_CONF_PATH}
 
 [${MOUNT_REMOTE}]
-    hosts allow = 10.0.0.0/8,100.0.0.0/10,172.16.0.0/16,192.168.0.0/24,127.0.0.1/32
+    auth users = ${RSYNC_SERVER_AUTH_USERS}
+    secrets file = ${RSYNC_SERVER_SECRETS_PATH}
     read only = false
     path = ${MOUNT_LOCAL}
     comment = ${MOUNT_REMOTE}
