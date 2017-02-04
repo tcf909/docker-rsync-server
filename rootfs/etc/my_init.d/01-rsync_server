@@ -71,7 +71,6 @@ EOF
     path = ${MOUNT_LOCAL}
     comment = ${MOUNT_REMOTE}
     refuse options = delete
-    post-xfer exec = /scripts/filebot-postprocess.sh
 EOF
 
     done;
