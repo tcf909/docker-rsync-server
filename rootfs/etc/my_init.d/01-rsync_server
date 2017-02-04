@@ -38,6 +38,8 @@ EOF
 
     echo -e "${RSYNC_SERVER_AUTH_SECRETS}" > "${RSYNC_SERVER_SECRETS_PATH}"
 
+    chmod 600 "${RSYNC_SERVER_SECRETS_PATH}"
+
     COUNT=0
     while [[ true ]]; do
 
